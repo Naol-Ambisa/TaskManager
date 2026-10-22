@@ -16,19 +16,17 @@ const STATUS_LABELS = { all: "All Tasks", active: "Active Tasks", completed: "Co
 
 const state = {
   tasks: [],
-  status: "all",      // all | active | completed
-  category: "all",    // all | work | personal | study
+  status: "all",   
+  category: "all", 
   search: "",
-  sort: "recent",     // recent | due | name
-  editingId: null     // id of the task being edited, or null when creating
+  sort: "recent",   
+  editingId: null  
 };
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
 
 /* ---------- Storage ---------- */
-// Accept only well-formed tasks so bad saved data can never break the app.
-
 function normalizeTask(raw) {
   if (!raw || typeof raw !== "object") return null;
   const title = typeof raw.title === "string" ? raw.title.trim() : "";
@@ -78,9 +76,7 @@ function generateId() {
   if (window.crypto && typeof crypto.randomUUID === "function") return crypto.randomUUID();
   return `task-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
-
-/* ---------- Date helpers (local calendar dates, no timezone conversion) ---------- */
-
+// Date helpers (local calendar dates, no timezone conversion)
 function todayString() {
   const d = new Date();
   const pad = (n) => String(n).padStart(2, "0");
@@ -98,8 +94,7 @@ function renderToday() {
   el.textContent = label;
   el.dateTime = todayString();
 }
-
-/* ---------- Theme ---------- */
+// Theme
 
 function applyTheme(theme) {
   document.body.dataset.theme = theme;
@@ -133,7 +128,7 @@ function toggleTheme() {
   }
 }
 
-/* ---------- Task operations ---------- */
+// Task operations
 function createTask({ title, description, category, dueDate }) {
   const now = Date.now();
   state.tasks.push({ id: generateId(), title, description, category, dueDate, completed: false, createdAt: now, updatedAt: now });
@@ -187,7 +182,7 @@ async function clearCompleted() {
   showToast("Completed tasks cleared");
 }
 
-/* ---------- Filter, search, sort (never modify the stored tasks) ---------- */
+// Filter, search, sort (never modify the stored tasks)
 
 function filterTasks(tasks) {
   return tasks.filter((task) => {
@@ -222,7 +217,7 @@ function sortTasks(tasks) {
 
 const getVisibleTasks = () => sortTasks(searchTasks(filterTasks(state.tasks)));
 
-/* ---------- Rendering ---------- */
+// Rendering
 
 function renderStatistics() {
   const total = state.tasks.length;
@@ -352,7 +347,7 @@ function render() {
   renderTasks();
 }
 
-/* ---------- Modals ---------- */
+// Modals
 
 let lastFocused = null;
 
@@ -474,7 +469,7 @@ function showToast(message, type = "success") {
   }, type === "error" ? 4500 : 2600);
 }
 
-/* ---------- Sidebar (mobile) ---------- */
+// Sidebar (mobile)
 
 function setSidebarOpen(open) {
   const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
@@ -491,7 +486,7 @@ function toggleSidebar() {
   setSidebarOpen(!$("#sidebar").classList.contains("is-open"));
 }
 
-/* ---------- Event wiring ---------- */
+// Event wiring
 
 function bindEvents() {
   $("#theme-btn").addEventListener("click", toggleTheme);
@@ -589,7 +584,7 @@ function bindEvents() {
 
   document.addEventListener("visibilitychange", () => { if (!document.hidden) { renderToday(); renderTasks(); } });
 }
-/* ---------- Init ---------- */
+// Init
 
 function init() {
   loadTheme();
