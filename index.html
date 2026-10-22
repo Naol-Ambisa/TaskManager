@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="TaskFlow is a simple, fast task manager that saves your tasks in your browser.">
+    <meta name="theme-color" content="#5B67E8">
+    <title>Dynamic Task Manager & Productivity Tracker.</title>
+    <link rel="icon" href="data:,">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+  </head>
+
+  <body data-theme="light">
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <aside class="sidebar" id="sidebar" aria-label="Sidebar">
+      <div class="logo">
+        <span class="logo-mark" aria-hidden="true">✓</span>
+        <span class="logo-text">TaskManager (CRUD)</span>
+      </div>
+
+      <nav class="side-nav" aria-label="Task views">
+        <p class="side-heading">Tasks</p>
+        <button class="nav-item is-active" type="button" data-status="all" aria-current="page">
+          <span class="nav-icon" aria-hidden="true">☰</span>
+          <span>All Tasks</span>
+          <span class="nav-count" data-count="all">0</span>
+        </button>
+        <button class="nav-item" type="button" data-status="active">
+          <span class="nav-icon" aria-hidden="true">◔</span>
+          <span>Active Tasks</span>
+          <span class="nav-count" data-count="active">0</span>
+        </button>
+        <button class="nav-item" type="button" data-status="completed">
+          <span class="nav-icon" aria-hidden="true">✔</span>
+          <span>Completed Tasks</span>
+          <span class="nav-count" data-count="completed">0</span>
+        </button>
+
+        <p class="side-heading">Categories</p>
+        <button class="nav-item" type="button" data-category="work" aria-pressed="false">
+          <span class="dot dot-work" aria-hidden="true"></span>
+          <span>Work</span>
+          <span class="nav-count" data-count="work">0</span>
+        </button>
+        <button class="nav-item" type="button" data-category="personal" aria-pressed="false">
+          <span class="dot dot-personal" aria-hidden="true"></span>
+          <span>Personal</span>
+          <span class="nav-count" data-count="personal">0</span>
+        </button>
+        <button class="nav-item" type="button" data-category="study" aria-pressed="false">
+          <span class="dot dot-study" aria-hidden="true"></span>
+          <span>Study</span>
+          <span class="nav-count" data-count="study">0</span>
+        </button>
+      </nav>
+
+      <div class="side-bottom">
+        <section class="encourage" aria-label="Daily focus" aria-live="polite">
+          <p class="encourage-title">Daily focus</p>
+          <p class="encourage-text" id="encourage-text">Add your first task and start your day with a plan.</p>
+          <div class="progress" aria-hidden="true">
+            <span id="encourage-bar"></span>
+          </div>
+        </section>
+
+        <div class="workspace">
+          <span class="avatar" aria-hidden="true">N</span>
+          <div>
+            <p class="workspace-name">My Workspace</p>
+            <p class="workspace-sub">Saved in this browser</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <div class="scrim" id="scrim" hidden></div>
+
+    <div class="page">
+      <header class="topbar">
+        <button
+          class="icon-btn menu-btn"
+          id="menu-btn"
+          type="button"
+          aria-label="Open menu"
+          aria-expanded="false"
+          aria-controls="sidebar"
+        >☰</button>
+
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <span>Workspace</span>
+          <span aria-hidden="true">/</span>
+          <strong id="breadcrumb-current">All Tasks</strong>
+        </nav>
+
+        <div class="topbar-right">
+          <time class="today" id="today-date"></time>
+          <button
+            class="icon-btn theme-btn"
+            id="theme-btn"
+            type="button"
+            aria-label="Switch to dark mode"
+            title="Switch to dark mode"
+          >☾</button>
+        </div>
+      </header>
+
+      <main class="content" id="main">
+        <section class="welcome" aria-labelledby="welcome-title">
+          <div>
+            <h1 id="welcome-title">Good things start with a plan.</h1>
+            <p class="subtitle">Organize your day, focus on what matters, and make progress.</p>
+          </div>
+          <button class="btn btn-primary" id="add-task-btn" type="button">
+            <span aria-hidden="true">+</span>
+            Add New Task
+          </button>
+        </section>
+
+        <section class="stats" aria-label="Task statistics">
+          <article class="stat">
+            <span class="stat-icon stat-total" aria-hidden="true">▤</span>
+            <div>
+              <p class="stat-label">Total Tasks</p>
+              <p class="stat-value" id="stat-total">0</p>
+              <p class="stat-note">All tasks you've added</p>
+            </div>
+          </article>
+
+          <article class="stat">
+            <span class="stat-icon stat-progress" aria-hidden="true">◔</span>
+            <div>
+              <p class="stat-label">In Progress</p>
+              <p class="stat-value" id="stat-active">0</p>
+              <p class="stat-note">Still to be done</p>
+            </div>
+          </article>
+
+          <article class="stat">
+            <span class="stat-icon stat-done" aria-hidden="true">✔</span>
+            <div>
+              <p class="stat-label">Completed</p>
+              <p class="stat-value" id="stat-completed">0</p>
+              <p class="stat-note">Finished tasks</p>
+            </div>
+          </article>
+
+          <article class="stat stat-completion">
+            <div
+              class="completion-chart"
+              id="completion-chart"
+              role="img"
+              aria-label="Completion rate: 0 percent"
+            >
+              <span aria-hidden="true">%</span>
+            </div>
+            <div>
+              <p class="stat-label">Completion Rate</p>
+              <p class="stat-value" id="stat-rate">0%</p>
+              <p class="stat-note">Completed ÷ total</p>
+            </div>
+          </article>
+        </section>
+
+        <section class="panel" aria-labelledby="panel-title">
+          <div class="panel-head">
+            <div>
+              <h2 id="panel-title">My Tasks</h2>
+              <p class="panel-sub" id="visible-count" aria-live="polite">0 tasks shown</p>
+            </div>
+            <p class="save-state" id="save-state" role="status">✓ Saved automatically</p>
+          </div>
+
+          <div class="controls">
+            <div class="field search-field">
+              <label class="sr-only" for="search-input">Search tasks</label>
+              <span class="search-icon" aria-hidden="true">⌕</span>
+              <input
+                id="search-input"
+                type="search"
+                placeholder="Search by title, description or category"
+                autocomplete="off"
+              >
+            </div>
+
+            <div class="field sort-field">
+              <label class="sr-only" for="sort-select">Sort tasks</label>
+              <select id="sort-select">
+                <option value="recent">Sort: Recently Added</option>
+                <option value="due">Sort: Due Date</option>
+                <option value="name">Sort: Task Name</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="chip-rows">
+            <div class="chip-group" role="group" aria-label="Filter by status">
+              <button class="chip is-active" type="button" data-status="all" aria-pressed="true">All Tasks</button>
+              <button class="chip" type="button" data-status="active" aria-pressed="false">Active</button>
+              <button class="chip" type="button" data-status="completed" aria-pressed="false">Completed</button>
+            </div>
+
+            <div class="chip-group" role="group" aria-label="Filter by category">
+              <button class="chip is-active" type="button" data-category="all" aria-pressed="true">All Categories</button>
+              <button class="chip" type="button" data-category="work" aria-pressed="false">Work</button>
+              <button class="chip" type="button" data-category="personal" aria-pressed="false">Personal</button>
+              <button class="chip" type="button" data-category="study" aria-pressed="false">Study</button>
+            </div>
+          </div>
+
+          <ul class="task-list" id="task-list" aria-label="Tasks"></ul>
+
+          <div class="empty" id="empty-state" hidden>
+            <span class="empty-icon" aria-hidden="true">☑</span>
+            <h3 id="empty-title">No tasks here yet</h3>
+            <p id="empty-text">Create your first task to start organizing your day.</p>
+            <button class="btn btn-primary" id="empty-add-btn" type="button">Add New Task</button>
+          </div>
+
+          <div class="panel-foot">
+            <p id="footer-counts">0 tasks · 0 active · 0 completed</p>
+            <button class="btn btn-ghost" id="clear-completed-btn" type="button" disabled>
+              Clear Completed
+            </button>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="modal-backdrop" id="task-modal" hidden>
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal-head">
+          <h2 id="modal-title">Add New Task</h2>
+          <button class="icon-btn" id="modal-close" type="button" aria-label="Close dialog">✕</button>
+        </div>
+
+        <form id="task-form" novalidate>
+          <div class="form-field">
+            <label for="task-title">
+              Task title <span class="req" aria-hidden="true">*</span>
+            </label>
+            <input
+              id="task-title"
+              name="title"
+              type="text"
+              maxlength="100"
+              placeholder="Complete database assignment"
+              required
+              aria-describedby="title-error"
+            >
+            <p class="error" id="title-error" role="alert"></p>
+          </div>
+
+          <div class="form-field">
+            <label for="task-description">
+              Description <span class="optional">(optional)</span>
+            </label>
+            <textarea
+              id="task-description"
+              name="description"
+              rows="3"
+              maxlength="300"
+              placeholder="Review the lecture notes and finish the exercises."
+            ></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="task-category">
+                Category <span class="req" aria-hidden="true">*</span>
+              </label>
+              <select
+                id="task-category"
+                name="category"
+                required
+                aria-describedby="category-error"
+              >
+                <option value="" disabled selected>Select a category</option>
+                <option value="Work">Work</option>
+                <option value="Personal">Personal</option>
+                <option value="Study">Study</option>
+              </select>
+              <p class="error" id="category-error" role="alert"></p>
+            </div>
+
+            <div class="form-field">
+              <label for="task-due">
+                Due date <span class="optional">(optional)</span>
+              </label>
+              <input id="task-due" name="dueDate" type="date">
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button class="btn btn-ghost" id="modal-cancel" type="button">Cancel</button>
+            <button class="btn btn-primary" id="modal-submit" type="submit">Add Task</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal-backdrop" id="confirm-modal" hidden>
+      <div
+        class="modal modal-sm"
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby="confirm-title"
+        aria-describedby="confirm-text"
+      >
+        <h2 id="confirm-title">Are you sure?</h2>
+        <p class="confirm-text" id="confirm-text"></p>
+        <div class="modal-actions">
+          <button class="btn btn-ghost" id="confirm-cancel" type="button">Cancel</button>
+          <button class="btn btn-danger" id="confirm-ok" type="button">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="toasts" id="toasts" aria-live="polite" aria-atomic="false"></div>
+  </body>
+</html>
